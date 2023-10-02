@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">LabFiveSQL</string>
+    <string name="name">Имя</string>
+    <string name="email">Почта\n</string>
+    <string name="add">Добавить\n</string>
+    <string name="read">Прочитать</string>
+    <string name="clear">Очистить</string>
+    <string name="id">ID</string>
+    <string name="update">Обновить</string>
+</resources>
