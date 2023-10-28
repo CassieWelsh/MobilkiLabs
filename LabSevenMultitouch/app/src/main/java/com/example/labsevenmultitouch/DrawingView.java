@@ -1,59 +1,67 @@
 package com.example.labsevenmultitouch;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DrawingView extends View {
-    private Map<Integer, Path> paths = new HashMap<>();
-    private Map<Integer, Paint> paints = new HashMap();
+    private SparseArray<Path> paths = new SparseArray<>();
+    private SparseArray<Paint> paints = new SparseArray<>();
+    private Bitmap bitmap;
+    private Canvas drawCanvas;
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setFocusable(true);
         setFocusableInTouchMode(true);
+        setupPaint();
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        for (int pointerId : paths.keySet()) {
-            Path path = paths.get(pointerId);
-            path.reset();
+    private void setupPaint() {
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(10);
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+        for (int i = 0; i < 10; i++) {
+            paths.put(i, new Path());
+            paints.put(i, paint);
         }
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        drawCanvas = new Canvas(bitmap);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
-        for (Path path : paths.values()) {
-            canvas.drawPath(path, paints.get(getPathId(path)));
+        canvas.drawBitmap(bitmap, 0, 0, null);
+        for (int i = 0; i < 10; i++) {
+            canvas.drawPath(paths.get(i), paints.get(i));
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getActionMasked();
         int pointerIndex = event.getActionIndex();
         int pointerId = event.getPointerId(pointerIndex);
+        float x = event.getX(pointerIndex);
+        float y = event.getY(pointerIndex);
 
-        switch (action) {
+        switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
-                Path path = new Path();
-                path.moveTo(event.getX(pointerIndex), event.getY(pointerIndex));
-                paths.put(pointerId, path);
-
-                Paint paint = new Paint();
-                paint.setColor(getRandomColor());
-                paint.setStyle(Paint.Style.STROKE);
-                paint.setStrokeWidth(10);
-                paints.put(pointerId, paint);
+                paths.get(pointerId).moveTo(x, y);
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -65,26 +73,12 @@ public class DrawingView extends View {
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                paths.remove(pointerId);
-                paints.remove(pointerId);
+                paths.get(pointerId).lineTo(x, y);
                 break;
         }
 
         invalidate();
         return true;
-    }
-
-    private int getRandomColor() {
-        return Color.rgb((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256));
-    }
-
-    private int getPathId(Path path) {
-        for (Map.Entry<Integer, Path> entry : paths.entrySet()) {
-            if (entry.getValue() == path) {
-                return entry.getKey();
-            }
-        }
-        return -1;
     }
 }
 
