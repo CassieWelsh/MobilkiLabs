@@ -4,17 +4,30 @@ import static android.view.SurfaceHolder.*;
 import static android.view.WindowManager.*;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.hardware.Camera;
+import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
 
 public class MainActivity extends Activity {
     SurfaceView sv;
@@ -23,6 +36,7 @@ public class MainActivity extends Activity {
     Camera camera;
     final int CAMERA_ID = 0;
     final boolean FULL_SCREEN = true;
+    Button captureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +52,34 @@ public class MainActivity extends Activity {
         holder.setType(SURFACE_TYPE_PUSH_BUFFERS);
         holderCallback = new HolderCallback();
         holder.addCallback(holderCallback);
+
+        captureButton = findViewById(R.id.captureButton);
+        captureButton.setOnClickListener(view -> takePhoto());
+    }
+
+    void takePhoto() {
+        if (camera != null) {
+            camera.takePicture(null, null, (data, camera) -> {
+                // Save the photo to the gallery using MediaStore
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                try {
+                    OutputStream outputStream = getContentResolver().openOutputStream(uri);
+                    outputStream.write(data);
+                    outputStream.close();
+
+                    Toast.makeText(getApplicationContext(), "Photo saved to gallery", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Failed to save photo", Toast.LENGTH_SHORT).show();
+                }
+
+                // Restart the camera preview
+                camera.startPreview();
+            });
+        }
     }
 
     @Override
