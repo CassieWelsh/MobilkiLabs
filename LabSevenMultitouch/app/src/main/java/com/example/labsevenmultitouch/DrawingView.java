@@ -80,5 +80,13 @@ public class DrawingView extends View {
         invalidate();
         return true;
     }
+
+    public void clearCanvas() {
+        paths.clear();  // Clear the paths
+        for (int i = 0; i < 10; i++) {
+            paths.put(i, new Path());
+        }
+        invalidate();  // Trigger a redraw to clear the canvas
+    }
 }
 
