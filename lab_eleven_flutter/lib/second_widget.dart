@@ -17,24 +17,17 @@ class MyState extends State<MySecondWidget> {
     });
   }
 
-  // A random image from Unsplash
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ElevatedButton(
-                child: Text("Press Me"),
-                onPressed: changeURL,
-              ),
-              Image.network(url),
-            ],
+          child: GestureDetector(
+            onTap: changeURL, // Call changeURL when the image is tapped
+            child: Image.network(url),
           ),
         ),
-      ),
+      )
     );
   }
 }

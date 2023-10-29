@@ -24,13 +24,25 @@ class MyApp extends StatelessWidget {
               return ListTile(
                 title: Text(
                   item.heading,
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               );
             } else if (item is MessageItem) {
               return ListTile(
                 title: Text(item.sender),
                 subtitle: Text(item.body),
+                leading: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 44,
+                    minHeight: 128,
+                    maxWidth: 64,
+                    maxHeight: 256,
+                  ),
+                  child: Image(
+                    image: NetworkImage(item.cover),
+                    fit: BoxFit.cover
+                  )
+                ),
               );
             }
           },
@@ -54,6 +66,7 @@ class HeadingItem implements ListItem {
 class MessageItem implements ListItem {
   final String sender;
   final String body;
+  final String cover;
 
-  MessageItem(this.sender, this.body);
+  MessageItem(this.sender, this.body, this.cover);
 }
