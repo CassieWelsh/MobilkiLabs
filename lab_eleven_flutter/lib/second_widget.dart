@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class MySecondWidget extends StatefulWidget {
@@ -15,6 +17,14 @@ class MyState extends State<MySecondWidget> {
       url = "https://source.unsplash.com/random/800x600/?"
           "q=${new DateTime.now().millisecondsSinceEpoch}";
     });
+  }
+
+  @override
+  void initState() {
+    Timer.periodic(const Duration(seconds: 3), (Timer t) => setState(() {
+      url = "https://source.unsplash.com/random/800x600/?"
+          "q=${new DateTime.now().millisecondsSinceEpoch}";
+    }));
   }
 
   @override

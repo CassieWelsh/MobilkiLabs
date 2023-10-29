@@ -1,9 +1,37 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final List<ListItem> items;
 
-  MyApp({Key? key, required this.items}) : super(key: key);
+  const MyApp({required this.items});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _MyApper(items);
+  }
+}
+
+class _MyApper extends State<MyApp> {
+  late HeadingItem headingItem;
+  late List<MessageItem> books;
+  late List<Color> colors;
+
+  _MyApper(List<ListItem> items) {
+    books = [];
+    for (var item in items) {
+      if (item is HeadingItem) {
+        headingItem = item;
+      } else if (item is MessageItem) {
+        books.add(item);
+      }
+    }
+    colors = [];
+    for (int i = 0; i < items.length; i++) {
+      colors.add(Colors.white);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,36 +43,37 @@ class MyApp extends StatelessWidget {
           title: Text(title),
         ),
         body: ListView.builder(
+
           // Let the ListView know how many items it needs to build.
-          itemCount: items.length,
+          itemCount: books.length,
           // Provide a builder function. This is where the magic happens. // Convert each item into a widget based on the type of item it is.
           itemBuilder: (context, index) {
-            final item = items[index];
-            if (item is HeadingItem) {
               return ListTile(
-                title: Text(
-                  item.heading,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              );
-            } else if (item is MessageItem) {
-              return ListTile(
-                title: Text(item.sender),
-                subtitle: Text(item.body),
+                title: Text(books[index].sender),
+                subtitle: Text(books[index].body),
+                tileColor: colors[index],
+                onTap: () {
+                  setState(() {
+                    colors[index] =
+                        Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+                            .withOpacity(1.0);
+                  });
+                },
+                onLongPress: () {
+                  setState(() {
+                    books.removeAt(index);
+                  });
+                },
                 leading: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: 44,
-                    minHeight: 128,
-                    maxWidth: 64,
-                    maxHeight: 256,
-                  ),
-                  child: Image(
-                    image: NetworkImage(item.cover),
-                    fit: BoxFit.cover
-                  )
-                ),
+                    constraints: const BoxConstraints(
+                      minWidth: 44,
+                      minHeight: 128,
+                      maxWidth: 64,
+                      maxHeight: 256,
+                    ),
+                    child: Image(
+                        image: NetworkImage(books[index].cover), fit: BoxFit.cover)),
               );
-            }
           },
         ),
       ),
