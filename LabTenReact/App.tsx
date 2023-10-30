@@ -1,118 +1,145 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+// App.tsx
+import React, { Component, useState } from 'react';
+import { View, Text, Button, FlatList, StyleSheet, TouchableHighlight } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const Tab = createBottomTabNavigator();
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+// function Screen1({ navigation }) {
+//   return (
+//     <View>
+//       <Text>Экран 1</Text>
+//       <Button title="Перейти к Экрану 2" onPress={() => navigation.navigate('Screen2')} />
+//     </View>
+//   );
+// }
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+// function Screen2({ navigation }) {
+//   return (
+//     <View>
+//       <Text>Экран 2</Text>
+//       <Button title="Перейти к Экрану 3" onPress={() => navigation.navigate('Screen3')} />
+//     </View>
+//   );
+// }
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function Screen3({ navigation }) {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View>
+      <Text>Экран 3</Text>
+      <Button title="Перейти к Экрану 1" onPress={() => navigation.navigate('Screen1')} />
     </View>
   );
 }
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+class Screen2 extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { pressing: false };
+  }
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  _onPressIn = () => {
+    this.setState({ pressing: true });
   };
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+  _onPressOut = () => {
+    this.setState({ pressing: false });
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <TouchableHighlight
+          onPressIn={this._onPressIn}
+          onPressOut={this._onPressOut}
+          style={styles.touchable}
+        >
+          <View style={styles.button}>
+            <Text style={styles.welcome}>
+              {this.state.pressing ? "НАЖАТО!" : "НАЖМИ!"}
+            </Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF",
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  welcome: { fontSize: 20, textAlign: "center", margin: 10, color: "#FFFFFF" },
+  touchable: { borderRadius: 100 },
+  button: {
+    backgroundColor: "#FF00FF",
+    borderRadius: 100,
+    height: 200,
+    width: 200,
+    justifyContent: "center",
   },
 });
 
-export default App;
+export default function Screen1() {
+  const data = [
+    { key: 'a' },
+    { key: 'b' },
+    { key: 'c' },
+    { key: 'd' },
+    { key: 'a longer example' },
+    { key: 'e' },
+    { key: 'f' },
+    { key: 'g' },
+    { key: 'h' },
+    { key: 'i' },
+    { key: 'j' },
+    { key: 'k' },
+    { key: 'l' },
+    { key: 'm' },
+    { key: 'n' },
+    { key: 'o' },
+    { key: 'p' },
+  ];
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#F5FCFF',
+    },
+    row: {
+      fontSize: 24,
+      padding: 42,
+      borderWidth: 1,
+      borderColor: '#DDDDDD',
+    },
+  });
+
+  const renderItem = ({ item }) => (
+    <Text style={styles.row}>{item.key}</Text>
+  );
+
+  return (
+    <View style={styles.container}>
+      <FlatList data={data} renderItem={renderItem} />
+    </View>
+  );
+}
+
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="Screen1" component={Screen1} options={{ title: 'Экран 1' }} />
+        <Tab.Screen name="Screen2" component={Screen2} options={{ title: 'Экран 2' }} />
+        {/* <Tab.Screen name="Screen3" component={Screen3} options={{ title: 'Экран 3' }} /> */}
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
