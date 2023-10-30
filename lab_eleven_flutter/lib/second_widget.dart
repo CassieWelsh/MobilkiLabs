@@ -21,7 +21,7 @@ class MyState extends State<MySecondWidget> {
 
   @override
   void initState() {
-    Timer.periodic(const Duration(seconds: 3), (Timer t) => setState(() {
+    Timer.periodic(const Duration(seconds: 6), (Timer t) => setState(() {
       url = "https://source.unsplash.com/random/800x600/?"
           "q=${new DateTime.now().millisecondsSinceEpoch}";
     }));
